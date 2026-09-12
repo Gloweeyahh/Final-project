@@ -8,20 +8,21 @@ actually needs.
 
 **Live demo:** https://gloweeyahh.github.io/Final-project/
 
-Looking to add a feature rather than just run this? See
-`CONTRIBUTING.md` for how the code is laid out, where things go, and
-which parts are fragile.
 
 ## What it does
 
 - Add an application: company, title, job URL, location, work type,
-  status, date applied, deadline, follow-up date, notes.
+  status, date applied, deadline, follow-up date, resume version used,
+  notes.
 - See everything grouped into a board by status — Saved, Applied,
-  Interview, Offer, Rejected — with a count on each column.
+  Interview, Offer, Rejected — with a count on each column, sorted by
+  deadline (soonest first, undated ones last).
 - Move an application between statuses with a dropdown on its card (see
   "What's deliberately not implemented" for why this isn't drag-and-drop).
 - Click any card to open, edit, or delete it.
 - Search by company or job title, live, across the whole board.
+- Export the current view to a CSV file — respects an active search, so
+  what downloads matches what's on screen.
 - Four summary numbers up top: total tracked, applied this week,
   interviews in progress, and follow-ups due in the next 7 days.
 
@@ -109,10 +110,10 @@ things I ran out of time for:
   instead. Accessible drag-and-drop needs real work (or a library) to
   get right for keyboard users; a `<select>` does the same job and is
   keyboard-accessible by default.
-- **No CSV export, no browser extension to save a job from a listing
-  page, no email reminders for follow-ups, no resume/cover-letter file
-  attachments.** All reasonable next features, all cut to keep this
-  finishable.
+- **No browser extension to save a job from a listing page, no email
+  reminders for follow-ups, no resume/cover-letter file attachments**
+  (resume version is tracked as a short text label, not a file). All
+  reasonable next features, all cut to keep this finishable.
 - **No authentication.** There's nothing here that needs protecting
   from other people, since nothing leaves your browser.
 
@@ -127,10 +128,9 @@ page deletes everything, with no server-side copy to recover it from.
 
 - `index.html` — structure: header, stats, board, the add/edit dialog
 - `styles.css` — all styling, including the board/card/dialog states
-- `logic.js` — pure, DOM-free logic (validation, search matching, date
-  math, stats) — see `CONTRIBUTING.md` for why this is separate
-- `logic.test.js` — automated checks for `logic.js`, run with `node --test`
-- `app.js` — DOM rendering, event wiring, and storage handling
+- `app.js` — data model, storage handling, rendering, and all
+  interaction logic
 - `README.md` — this file
-- `CONTRIBUTING.md` — architecture, where a new feature belongs, how to
-  run the checks, and the parts of this code that are fragile
+
+
+
