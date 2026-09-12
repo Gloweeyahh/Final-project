@@ -307,6 +307,18 @@ main {
   margin-bottom: 1.25rem;
 }
 
+.btn-secondary {
+  background: var(--surface);
+  color: var(--ink);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 0.5rem 0.85rem;
+  font-weight: 600;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+.btn-secondary:hover { border-color: var(--ink); }
+
 .toolbar {
   margin-bottom: 1rem;
   display: flex;
