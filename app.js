@@ -53,18 +53,6 @@ function saveApplications() {
 
 let applications = loadApplications();
 
-function uid() {
-  return 'app_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
-}
-
-const STATUSES = [
-  { key: 'saved', label: 'Saved' },
-  { key: 'applied', label: 'Applied' },
-  { key: 'interview', label: 'Interview' },
-  { key: 'offer', label: 'Offer' },
-  { key: 'rejected', label: 'Rejected' },
-];
-
 /* ---------------- DOM refs ---------------- */
 const boardEl = document.getElementById('board');
 const addBtn = document.getElementById('add-btn');
@@ -97,15 +85,8 @@ const deleteBtn = document.getElementById('delete-btn');
 const saveBtn = document.getElementById('save-btn');
 const idField = document.getElementById('app-id');
 
-function looksLikeUrl(value) {
-  if (!value) return true; // optional field
-  try {
-    const u = new URL(value);
-    return u.protocol === 'http:' || u.protocol === 'https:';
-  } catch {
-    return false;
-  }
-}
+// uid, looksLikeUrl, matchesSearch, formatDate, daysUntil, STATUSES,
+// and computeStats all come from logic.js, loaded before this file.
 
 /* ---------------- rendering ---------------- */
 function statusOptionsHtml(selected) {
@@ -114,18 +95,7 @@ function statusOptionsHtml(selected) {
   ).join('');
 }
 
-function formatDate(iso) {
-  if (!iso) return null;
-  const d = new Date(iso + 'T00:00:00');
-  return d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
-}
 
-function daysUntil(iso) {
-  const d = new Date(iso + 'T00:00:00');
-  const now = new Date();
-  now.setHours(0, 0, 0, 0);
-  return Math.round((d - now) / 86400000);
-}
 
 function renderCard(app) {
   const li = document.createElement('li');
@@ -158,12 +128,6 @@ function renderCard(app) {
       </select>
     </div>`;
   return li;
-}
-
-function matchesSearch(app, term) {
-  if (!term) return true;
-  const haystack = `${app.company} ${app.title}`.toLowerCase();
-  return haystack.includes(term.toLowerCase());
 }
 
 function renderBoard(searchTerm) {
@@ -223,27 +187,7 @@ const statInterviewsEl = document.getElementById('stat-interviews');
 const statFollowupsEl = document.getElementById('stat-followups');
 
 function updateStats() {
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  const sevenDaysAgo = new Date(today); sevenDaysAgo.setDate(today.getDate() - 7);
-  const sevenDaysAhead = new Date(today); sevenDaysAhead.setDate(today.getDate() + 7);
-
-  const total = applications.length;
-
-  const appliedThisWeek = applications.filter((a) => {
-    if (!a.dateApplied) return false;
-    const d = new Date(a.dateApplied + 'T00:00:00');
-    return d >= sevenDaysAgo && d <= today;
-  }).length;
-
-  const interviews = applications.filter((a) => a.status === 'interview').length;
-
-  const followUpsDue = applications.filter((a) => {
-    if (!a.followUp) return false;
-    const d = new Date(a.followUp + 'T00:00:00');
-    return d <= sevenDaysAhead;
-  }).length;
-
+  const { total, appliedThisWeek, interviews, followUpsDue } = computeStats(applications);
   statTotalEl.textContent = total;
   statWeekEl.textContent = appliedThisWeek;
   statInterviewsEl.textContent = interviews;

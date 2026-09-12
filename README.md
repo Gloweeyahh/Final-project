@@ -6,7 +6,11 @@ and what I still owed a follow-up. Not a tutorial project — this is the
 tool I wanted to exist, scoped down to what one person, in one browser,
 actually needs.
 
-**Live demo:** (https://gloweeyahh.github.io/Final-project/)
+**Live demo:** _add your deployed URL here before submitting_
+
+Looking to add a feature rather than just run this? See
+`CONTRIBUTING.md` for how the code is laid out, where things go, and
+which parts are fragile.
 
 ## What it does
 
@@ -123,6 +127,10 @@ page deletes everything, with no server-side copy to recover it from.
 
 - `index.html` — structure: header, stats, board, the add/edit dialog
 - `styles.css` — all styling, including the board/card/dialog states
-- `app.js` — data model, storage handling, rendering, and all
-  interaction logic
+- `logic.js` — pure, DOM-free logic (validation, search matching, date
+  math, stats) — see `CONTRIBUTING.md` for why this is separate
+- `logic.test.js` — automated checks for `logic.js`, run with `node --test`
+- `app.js` — DOM rendering, event wiring, and storage handling
 - `README.md` — this file
+- `CONTRIBUTING.md` — architecture, where a new feature belongs, how to
+  run the checks, and the parts of this code that are fragile
