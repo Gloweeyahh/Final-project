@@ -6,7 +6,7 @@ and what I still owed a follow-up. Not a tutorial project — this is the
 tool I wanted to exist, scoped down to what one person, in one browser,
 actually needs.
 
-**Live demo:** _add your deployed URL here before submitting_
+**Live demo:** (https://gloweeyahh.github.io/Final-project/)
 
 ## What it does
 
