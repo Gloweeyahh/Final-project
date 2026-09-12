@@ -418,4 +418,5 @@ form.addEventListener('submit', (event) => {
   saveApplications();
   render();
 });
+
 render();
