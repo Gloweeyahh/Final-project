@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Applyd — Job Application Tracker</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<a class="skip-link" href="#main">Skip to applications</a>
+
+<header class="topbar">
+  <div class="topbar-inner topbar-row">
+    <div>
+      <div class="brand">
+        <span class="brand-mark" aria-hidden="true">A</span>
+        <span class="brand-name">Applyd</span>
+      </div>
+      <p class="brand-tagline">One place for every application, so nothing quietly falls through.</p>
+    </div>
+    <button type="button" id="add-btn" class="btn-primary">+ Add application</button>
+  </div>
+</header>
+
+<div id="banner-region" aria-live="polite"></div>
+
+<main id="main">
+  <section class="stats" id="stats" aria-label="Summary">
+    <div class="stat-card">
+      <p class="stat-number" id="stat-total">0</p>
+      <p class="stat-label">Total tracked</p>
+    </div>
+    <div class="stat-card">
+      <p class="stat-number" id="stat-week">0</p>
+      <p class="stat-label">Applied this week</p>
+    </div>
+    <div class="stat-card">
+      <p class="stat-number" id="stat-interviews">0</p>
+      <p class="stat-label">Interviews</p>
+    </div>
+    <div class="stat-card">
+      <p class="stat-number" id="stat-followups">0</p>
+      <p class="stat-label">Follow-ups due (7 days)</p>
+    </div>
+  </section>
+
+  <div id="empty-state" class="empty-state" hidden>
+    <div class="empty-icon" aria-hidden="true">＋</div>
+    <p class="empty-title">No applications yet</p>
+    <p class="empty-detail">Add the first one you're tracking — you can always fill in details later.</p>
+    <button type="button" class="btn-primary" id="empty-add-btn">+ Add your first application</button>
+  </div>
+
+  <div id="board-wrap" hidden>
+    <div class="toolbar">
+      <label for="search" class="visually-hidden">Search applications</label>
+      <input type="search" id="search" placeholder="Search by company or job title…">
+      <p id="result-summary" class="result-summary" aria-live="polite"></p>
+    </div>
+
+    <div id="board" class="board"></div>
+    <p id="no-results" class="no-results" hidden>No applications match "<span id="no-results-term"></span>". Try a different search, or clear it to see everything.</p>
+  </div>
+</main>
+
+<dialog id="app-dialog" aria-labelledby="dialog-title">
+  <form id="app-form" class="dialog-form" method="dialog">
+    <div class="dialog-header">
+      <h2 id="dialog-title">Add application</h2>
+      <button type="button" class="dialog-close" id="dialog-close-btn" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+
+    <input type="hidden" id="app-id" name="id">
+
+    <div class="field">
+      <label for="company">Company *</label>
+      <input type="text" id="company" name="company" required autofocus>
+    </div>
+
+    <div class="field">
+      <label for="title">Job title *</label>
+      <input type="text" id="title" name="title" required>
+    </div>
+
+    <div class="field">
+      <label for="job-url">Job URL</label>
+      <input type="url" id="job-url" name="jobUrl" placeholder="https://…">
+      <p class="field-error" id="url-error" hidden></p>
+    </div>
+
+    <div class="field-row">
+      <div class="field">
+        <label for="location">Location</label>
+        <input type="text" id="location" name="location" placeholder="e.g. Remote, Lagos">
+      </div>
+      <div class="field">
+        <label for="work-type">Work type</label>
+        <select id="work-type" name="workType">
+          <option value="">Not specified</option>
+          <option value="remote">Remote</option>
+          <option value="onsite">On-site</option>
+          <option value="hybrid">Hybrid</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="field">
+      <label for="status">Status</label>
+      <select id="status" name="status">
+        <option value="saved">Saved</option>
+        <option value="applied">Applied</option>
+        <option value="interview">Interview</option>
+        <option value="offer">Offer</option>
+        <option value="rejected">Rejected</option>
+      </select>
+    </div>
+
+    <div class="field-row">
+      <div class="field">
+        <label for="date-applied">Date applied</label>
+        <input type="date" id="date-applied" name="dateApplied">
+      </div>
+      <div class="field">
+        <label for="deadline">Deadline</label>
+        <input type="date" id="deadline" name="deadline">
+      </div>
+      <div class="field">
+        <label for="follow-up">Follow up on</label>
+        <input type="date" id="follow-up" name="followUp">
+      </div>
+    </div>
+
+    <div class="field">
+      <label for="notes">Notes</label>
+      <textarea id="notes" name="notes" rows="3" placeholder="Anything worth remembering — who referred you, how the call went…"></textarea>
+    </div>
+
+    <p class="form-error" id="form-error" hidden></p>
+
+    <div class="dialog-actions">
+      <button type="button" id="delete-btn" class="btn-danger" hidden>Delete</button>
+      <button type="submit" class="btn-primary" id="save-btn">Save application</button>
+    </div>
+  </form>
+</dialog>
+
+<script src="app.js"></script>
+</body>
+</html>
