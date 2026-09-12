@@ -57,6 +57,29 @@ function uid() {
   return 'app_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
 }
 
+// CSV values containing a comma, quote, or newline must be quoted, with
+// internal quotes doubled — the standard CSV escaping rule.
+function csvEscape(value) {
+  const str = String(value ?? '');
+  if (/[",\n]/.test(str)) {
+    return '"' + str.replace(/"/g, '""') + '"';
+  }
+  return str;
+}
+
+function toCsv(applications) {
+  const headers = [
+    'Company', 'Title', 'Status', 'Location', 'Work type', 'Job URL',
+    'Date applied', 'Deadline', 'Follow up', 'Resume version', 'Notes',
+  ];
+  const rows = applications.map((a) => [
+    a.company, a.title, a.status, a.location || '', a.workType || '',
+    a.jobUrl || '', a.dateApplied || '', a.deadline || '', a.followUp || '',
+    a.resumeVersion || '', a.notes || '',
+  ].map(csvEscape).join(','));
+  return [headers.join(','), ...rows].join('\r\n');
+}
+
 const STATUSES = [
   { key: 'saved', label: 'Saved' },
   { key: 'applied', label: 'Applied' },
@@ -75,6 +98,7 @@ const searchInput = document.getElementById('search');
 const resultSummaryEl = document.getElementById('result-summary');
 const noResultsEl = document.getElementById('no-results');
 const noResultsTermEl = document.getElementById('no-results-term');
+const exportBtn = document.getElementById('export-btn');
 const bannerRegion = document.getElementById('banner-region');
 
 function showBanner(type, message) {
@@ -271,6 +295,23 @@ function render() {
 }
 
 searchInput.addEventListener('input', () => renderBoard(searchInput.value));
+
+// Exports whatever is currently visible — the filtered set if a search
+// is active, everything otherwise.
+exportBtn.addEventListener('click', () => {
+  const term = searchInput.value.trim();
+  const rows = term ? applications.filter((a) => matchesSearch(a, term)) : applications;
+  const csv = toCsv(rows);
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = 'applyd-export.csv';
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  URL.revokeObjectURL(url);
+});
 
 if (loadWarning) showBanner(loadWarning.type, loadWarning.message);
 
