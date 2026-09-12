@@ -53,6 +53,18 @@ function saveApplications() {
 
 let applications = loadApplications();
 
+function uid() {
+  return 'app_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+}
+
+const STATUSES = [
+  { key: 'saved', label: 'Saved' },
+  { key: 'applied', label: 'Applied' },
+  { key: 'interview', label: 'Interview' },
+  { key: 'offer', label: 'Offer' },
+  { key: 'rejected', label: 'Rejected' },
+];
+
 /* ---------------- DOM refs ---------------- */
 const boardEl = document.getElementById('board');
 const addBtn = document.getElementById('add-btn');
@@ -85,8 +97,15 @@ const deleteBtn = document.getElementById('delete-btn');
 const saveBtn = document.getElementById('save-btn');
 const idField = document.getElementById('app-id');
 
-// uid, looksLikeUrl, matchesSearch, formatDate, daysUntil, STATUSES,
-// and computeStats all come from logic.js, loaded before this file.
+function looksLikeUrl(value) {
+  if (!value) return true; // optional field
+  try {
+    const u = new URL(value);
+    return u.protocol === 'http:' || u.protocol === 'https:';
+  } catch {
+    return false;
+  }
+}
 
 /* ---------------- rendering ---------------- */
 function statusOptionsHtml(selected) {
@@ -95,7 +114,29 @@ function statusOptionsHtml(selected) {
   ).join('');
 }
 
+function formatDate(iso) {
+  if (!iso) return null;
+  const d = new Date(iso + 'T00:00:00');
+  return d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+}
 
+function daysUntil(iso) {
+  const d = new Date(iso + 'T00:00:00');
+  const now = new Date();
+  now.setHours(0, 0, 0, 0);
+  return Math.round((d - now) / 86400000);
+}
+
+// Sorts by deadline, soonest first. Applications with no deadline sort
+// last, in their original relative order.
+function sortByDeadline(apps) {
+  return apps.slice().sort((a, b) => {
+    if (!a.deadline && !b.deadline) return 0;
+    if (!a.deadline) return 1;
+    if (!b.deadline) return -1;
+    return a.deadline < b.deadline ? -1 : a.deadline > b.deadline ? 1 : 0;
+  });
+}
 
 function renderCard(app) {
   const li = document.createElement('li');
@@ -130,6 +171,12 @@ function renderCard(app) {
   return li;
 }
 
+function matchesSearch(app, term) {
+  if (!term) return true;
+  const haystack = `${app.company} ${app.title}`.toLowerCase();
+  return haystack.includes(term.toLowerCase());
+}
+
 function renderBoard(searchTerm) {
   updateStats();
   const term = (searchTerm ?? '').trim();
@@ -147,7 +194,7 @@ function renderBoard(searchTerm) {
 
   boardEl.innerHTML = '';
   for (const statusDef of STATUSES) {
-    const columnApps = visible.filter((a) => a.status === statusDef.key);
+    const columnApps = sortByDeadline(visible.filter((a) => a.status === statusDef.key));
 
     const column = document.createElement('section');
     column.className = 'column';
@@ -187,7 +234,27 @@ const statInterviewsEl = document.getElementById('stat-interviews');
 const statFollowupsEl = document.getElementById('stat-followups');
 
 function updateStats() {
-  const { total, appliedThisWeek, interviews, followUpsDue } = computeStats(applications);
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const sevenDaysAgo = new Date(today); sevenDaysAgo.setDate(today.getDate() - 7);
+  const sevenDaysAhead = new Date(today); sevenDaysAhead.setDate(today.getDate() + 7);
+
+  const total = applications.length;
+
+  const appliedThisWeek = applications.filter((a) => {
+    if (!a.dateApplied) return false;
+    const d = new Date(a.dateApplied + 'T00:00:00');
+    return d >= sevenDaysAgo && d <= today;
+  }).length;
+
+  const interviews = applications.filter((a) => a.status === 'interview').length;
+
+  const followUpsDue = applications.filter((a) => {
+    if (!a.followUp) return false;
+    const d = new Date(a.followUp + 'T00:00:00');
+    return d <= sevenDaysAhead;
+  }).length;
+
   statTotalEl.textContent = total;
   statWeekEl.textContent = appliedThisWeek;
   statInterviewsEl.textContent = interviews;
