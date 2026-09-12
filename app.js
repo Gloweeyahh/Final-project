@@ -146,6 +146,7 @@ function renderCard(app) {
   if (app.location) metaBits.push(escapeHtml(app.location));
   if (app.workType) metaBits.push(escapeHtml(app.workType));
   if (app.dateApplied) metaBits.push('Applied ' + formatDate(app.dateApplied));
+  if (app.resumeVersion) metaBits.push('Resume: ' + escapeHtml(app.resumeVersion));
 
   let deadlineHtml = '';
   if (app.deadline) {
@@ -307,6 +308,7 @@ function openEditDialog(app) {
   document.getElementById('date-applied').value = app.dateApplied || '';
   document.getElementById('deadline').value = app.deadline || '';
   document.getElementById('follow-up').value = app.followUp || '';
+  document.getElementById('resume-version').value = app.resumeVersion || '';
   document.getElementById('notes').value = app.notes || '';
 
   dialogTitle.textContent = 'Edit application';
@@ -404,6 +406,7 @@ form.addEventListener('submit', (event) => {
     dateApplied: document.getElementById('date-applied').value || null,
     deadline: document.getElementById('deadline').value || null,
     followUp: document.getElementById('follow-up').value || null,
+    resumeVersion: document.getElementById('resume-version').value.trim(),
     notes: document.getElementById('notes').value.trim(),
   };
 
